@@ -1,0 +1,58 @@
+table Sheet1
+	lineageTag: e3721b21-9c98-4dbf-9831-3f4b8e1eec57
+
+	column Key
+		dataType: int64
+		formatString: 0
+		lineageTag: e5630b74-7215-40f1-afe6-75f2efcc7321
+		summarizeBy: count
+		sourceColumn: Key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		lineageTag: df1d62a6-8383-47dc-90c0-25413d9d0ea8
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column Lang
+		dataType: string
+		lineageTag: 3bdaa56e-f632-4c68-b2fd-1ea2c2bede8c
+		summarizeBy: none
+		sourceColumn: Lang
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Person name'
+		dataType: string
+		lineageTag: 8eb2c6ba-cc72-48c6-8025-bb506f40632b
+		summarizeBy: none
+		sourceColumn: Person name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Sales amount'
+		dataType: int64
+		formatString: 0
+		lineageTag: 3f0f6b3a-68e2-4e6f-a9d3-56d02f27d450
+		summarizeBy: sum
+		sourceColumn: Sales amount
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Sheet1 = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\carlosdel\Downloads\RLS-rowData.xlsx"), null, true),
+				    Sheet1_Sheet = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Sheet1_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Key", Int64.Type}, {"Region", type text}, {"Lang", type text}, {"Person name", type text}, {"Sales amount", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
